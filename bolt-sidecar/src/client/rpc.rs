@@ -17,7 +17,7 @@ use alloy::{
                 geth::{GethDebugTracingCallOptions, GethTrace},
                 parity::{TraceResults, TraceType},
             },
-            Block, EIP1186AccountProofResponse, FeeHistory, TransactionRequest,
+            Block, EIP1186AccountProofResponse, FeeHistory, TransactionRequest, Transaction,
         },
     },
     transports::{http::Http, TransportErrorKind, TransportResult},
@@ -152,6 +152,14 @@ impl RpcClient {
 
         // Important: join_all will preserve the order of the proofs
         join_all(proofs).await.into_iter().collect::<Result<Vec<_>, _>>()
+    }
+
+    /// Getting the transaction by hash
+    pub async fn get_transaction_by_hash(
+        &self,
+        hash: String,
+    ) -> TransportResult<Transaction> {
+        self.0.request("eth_getTransactionByHash", (hash,)).await
     }
 
     /// Performs multiple call traces on top of the same block. i.e. transaction n will be executed
